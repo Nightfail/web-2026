@@ -7,12 +7,13 @@
 </head> 
 <body> 
   <?php 
-  function calculateRpn(string $expression): int 
+  function calculateRpn(string $expression): array 
   { 
       $tokens = []; 
       $tokenCount = 0; 
       $currentToken = ''; 
 
+      // Разбор выражения на токены
       $i = 0;
       while (isset($expression[$i])) 
       { 
@@ -37,6 +38,10 @@
           $tokenCount++; 
       } 
 
+      if ($tokenCount === 0) {
+          return ['error' => 'Выражение пустое'];
+      }
+
       $stack = []; 
       $stackSize = 0; 
 
@@ -45,11 +50,14 @@
           $token = $tokens[$i]; 
           if ($token === '+' || $token === '-' || $token === '*') 
           { 
+              if ($stackSize < 2) 
+              {
+                  return ['error' => 'Некорректное выражение: недостаточно операндов для операции "' . $token . '"'];
+              }            
               $stackSize--; 
               $b = $stack[$stackSize]; 
               $stackSize--; 
               $a = $stack[$stackSize]; 
-
               $res = 0; 
               if ($token === '+') 
               { 
@@ -68,32 +76,56 @@
           } 
           else 
           { 
+              // Проверка: является ли токен числом
+              if (!is_numeric($token)) {
+                  return ['error' => 'Некорректный токен: "' . $token . '"'];
+              }
               $stack[$stackSize] = (int) $token; 
               $stackSize++; 
           } 
       } 
-      return $stack[0]; 
+      
+      // Проверка: должен остаться ровно один результат
+      if ($stackSize !== 1) {
+          return ['error' => 'Некорректное выражение: слишком много операндов'];
+      }
+      
+      return ['result' => $stack[0]];
   } 
 
   $resultCalc = ''; 
+  $errorCalc = '';
   $inputExpr = ''; 
+  
   if (isset($_POST['expression'])) 
   { 
       $inputExpr = $_POST['expression']; 
-      $resultCalc = (string) calculateRpn($inputExpr); 
+      $calcResult = calculateRpn($inputExpr); 
+      
+      if (isset($calcResult['error'])) {
+          $errorCalc = $calcResult['error'];
+      } else {
+          $resultCalc = (string) $calcResult['result'];
+      }
   } 
   ?> 
 
   <div> 
     <form method="POST" action=""> 
       Введите выражение (ОПЗ): 
-      <input type="text" name="expression" placeholder="8 9 + 1 7 - *" value="<?php echo $inputExpr; ?>" required> 
+      <input type="text" name="expression" placeholder="8 9 + 1 7 - *" value="<?php echo htmlspecialchars($inputExpr); ?>" required> 
       <input type="submit" value="Вычислить"> 
     </form> 
   </div> 
 
+  <?php if ($errorCalc !== ''): ?> 
+  <div style="color: red; margin-top: 10px;"> 
+    Ошибка: <?php echo htmlspecialchars($errorCalc); ?> 
+  </div> 
+  <?php endif; ?> 
+  
   <?php if ($resultCalc !== ''): ?> 
-  <div> 
+  <div style="margin-top: 10px;"> 
     Результат: <?php echo $resultCalc; ?> 
   </div> 
   <?php endif; ?> 
