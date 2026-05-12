@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Войти</title>
+    <link rel="stylesheet" href="../assets/style_login.css">
+</head>
+<body>
+    <main class="page">
+        <div class="page__image">
+            <img src="../assets/images/login_hero.png" alt="Турист с рюкзаком на природе">
+        </div>
+        
+        <div class="page__content">
+            <h1 class="content__title">Войти</h1>
+            
+            <form class="login-form" action="#" method="post">
+                <div class="form__group">
+                    <label class="form__label" for="email">Электропочта</label>
+                    <input class="form__input" type="email" id="email" name="email" placeholder="Введите электропочту" required>
+                    <span class="form__hint">Введите электропочту в формате ****@***.**</span>
+                </div>
+                
+                <div class="form__group">
+                    <label class="form__label" for="password">Пароль</label>
+                    <input class="form__input form__input--password" type="password" id="password" name="password" required>
+                </div>
+                
+                <button class="form__button" type="submit">Продолжить</button>
+            </form>
+        </div>
+    </main>
+</body>
+</html>
